@@ -1,10 +1,11 @@
-from flask import Flask
+from flask import Flask, request
 from transformers import pipeline
 import time
-from flask import request
-import numpy
+import numpy as np
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 
 # Load the audio classification pipeline
@@ -19,6 +20,7 @@ def classify_audio():
     request_data = request.get_json()
     
     audio_samples = request_data['audio_samples']
+    audio_samples = np.array(audio_samples, dtype=np.float64)
     startTime = time.time()
     result = classifier(audio_samples)
     endTime = time.time()
