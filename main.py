@@ -20,16 +20,17 @@ model = model.to('cuda' if torch.cuda.is_available() else 'cpu')
 @app.route('/', methods=['POST'])
 def classify_audio():
     # takes in numpy array of an audio file
+    time1 = time.time()
     request_data = request.get_json()
-    
+    time2 = time.time()
     audio_samples = request_data['audio_samples']
+    time3 = time.time()
     audio_samples = np.array(audio_samples, dtype=np.float64)
-    startTime = time.time()
+    time4 = time.time()
     result = classifier(audio_samples)
-    endTime = time.time()
-    inference_time = endTime - startTime
+    time5 = time.time()
 
-    return {'result': result, 'inference_time': inference_time}
+    return {'result': result, 'time1': time1, 'time2': time2, 'time3': time3, 'time4': time4, 'time5': time5}
 
 @app.route('/ping')
 def pong():

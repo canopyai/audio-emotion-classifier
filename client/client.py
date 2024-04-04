@@ -6,6 +6,8 @@ import librosa
 import soundfile as sf
 import time
 
+# endpoint = "http://35.234.142.114:8080"
+endpoint = "http://127.0.0.1:8080"
 def resample_to_16k(wav_file_path, output_file_path):
 
     # Load the original audio file
@@ -25,6 +27,19 @@ print(f"PyTorch version: {torch.__version__}")
 import transformers
 print(f"Transformers version: {transformers.__version__}")
 
+
+def get_ping_duration():
+    url = "http://35.234.142.114:8080/ping"
+    start_time = time.time()  # Record the start time
+    response = requests.get(url)
+    end_time = time.time()  # Record the end time
+    
+    duration = end_time - start_time  # Calculate the duration
+    
+    if response.status_code == 200:
+        return f"Response Time: {duration} seconds"
+    else:
+        return f"Error: {response.status_code}"
 
 def wav_to_np_array():
     original_wav_file_path = "record.wav"   
@@ -61,18 +76,32 @@ def post_numpy_array(numpy_array, framerate):
     }
     
     # Post the data to the specified endpoint
-    response = requests.post("http://34.41.127.218", json=payload)
+    ping_start = time.time()
+    get_ping_duration()
+    ping_end = time.time()
+    print(f'ping time:{ping_end - ping_start}')
+    startNumpify = time.time()
+    response = requests.post(endpoint, json=payload)
+    endNumpify = time.time()
     
-    return response
+    return response, startNumpify, endNumpify
 
 # Load your WAV file and convert it
 
-startNumpify = time.time()
-numpy_array, fr = wav_to_np_array()
-endNumpify = time.time()
-print(f"Time to convert to numpy array: {endNumpify - startNumpify}")
 
-# Post the numpy array to the server
-response = post_numpy_array(numpy_array, fr)
+def infer():
+    
+    numpy_array, fr = wav_to_np_array()
+    
+    response, startNumpify, endNumpify = post_numpy_array(numpy_array, fr)
+    
+    resp_json = response.json()
+    time1 = resp_json['time1']
+    time2 = resp_json['time2']
+    time3 = resp_json['time3']
+    time4 = resp_json['time4']
+    time5 = resp_json['time5']
+    print(f'times:{time2 - time1}, {time3 - time2}, {time4 - time3}, {time5 - time4}')
 
-print(response.text)
+
+infer()
