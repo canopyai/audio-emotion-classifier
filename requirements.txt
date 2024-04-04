@@ -2,3 +2,4 @@ flask
 transformers
 numpy
 flask_cors
+torch
