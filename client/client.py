@@ -7,8 +7,8 @@ import soundfile as sf
 import time
 import io
 
-# endpoint = "http://35.202.236.166:8080"
-endpoint = "http://127.0.0.1:8080"
+endpoint = "http://34.90.83.54:8080"
+# endpoint = "http://127.0.0.1:8080"
 def resample_to_16k(wav_file_path, output_file_path):
 
     # Load the original audio file
@@ -66,12 +66,17 @@ def wav_to_np_array():
 
 def post_numpy_array(numpy_array, framerate):
     # Convert the numpy array to a list for JSON serialization
+ 
     numpy_array = denoise_audio(numpy_array)
+    startTime= time.time()
     audio_bytes = numpy_array.astype(np.float64).tobytes()
     
     # Create the data payload
     payload = audio_bytes
     
+    endTime = time.time()
+
+    print(f'time:{endTime - startTime}')
     # Post the data to the specified endpoint
     ping_start = time.time()
     get_ping_duration()
