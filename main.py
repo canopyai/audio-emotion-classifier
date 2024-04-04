@@ -15,6 +15,7 @@ classifier = pipeline("audio-classification", model="amuvarma/audio-emotion-clas
 
 # Access the model object from the pipeline
 model = classifier.model
+is_cuda_available = torch.cuda.is_available()
 model = model.to('cuda' if torch.cuda.is_available() else 'cpu')
 
 @app.route('/', methods=['POST'])
@@ -30,7 +31,7 @@ def classify_audio():
     result = classifier(audio_samples)
     time5 = time.time()
 
-    return {'result': result, 'time1': time1, 'time2': time2, 'time3': time3, 'time4': time4, 'time5': time5}
+    return {'result': result, 'time1': time1, 'time2': time2, 'time3': time3, 'time4': time4, 'time5': time5, "is_cuda_available": is_cuda_available}
 
 @app.route('/ping')
 def pong():
