@@ -61,7 +61,7 @@ def post_numpy_array(numpy_array, framerate):
     }
     
     # Post the data to the specified endpoint
-    response = requests.post("http://127.0.0.1:8080", json=payload)
+    response = requests.post("http://34.41.127.218", json=payload)
     
     return response
 
