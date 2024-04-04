@@ -1,9 +1,10 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from transformers import pipeline
 import time
 import numpy as np
 from flask_cors import CORS
 import torch
+
 
 app = Flask(__name__)
 CORS(app)
@@ -18,21 +19,36 @@ model = classifier.model
 is_cuda_available = torch.cuda.is_available()
 model = model.to('cuda' if torch.cuda.is_available() else 'cpu')
 
+
 @app.route('/', methods=['POST'])
 def classify_audio():
-    # takes in numpy array of an audio file
+    if 'audio' not in request.files:
+        return jsonify({"error": "Missing audio data"}), 400
+
+    # Measure time to read the audio file from request
     time1 = time.time()
-    request_data = request.get_json()
+    audio_file = request.files['audio']
+    audio_bytes = audio_file.read()
     time2 = time.time()
-    audio_samples = request_data['audio_samples']
+
+    # Convert bytes to numpy array
+    audio_samples = np.frombuffer(audio_bytes, dtype=np.float64)
     time3 = time.time()
-    audio_samples = np.array(audio_samples, dtype=np.float64)
-    time4 = time.time()
+
+    # Process the numpy array as needed (your classification logic here)
     result = classifier(audio_samples)
-    time5 = time.time()
+    time4 = time.time()
 
-    return {'result': result, 'time1': time1, 'time2': time2, 'time3': time3, 'time4': time4, 'time5': time5, "is_cuda_available": is_cuda_available}
+    # You can include additional logic here if needed
 
+    return jsonify({
+        'result': result, 
+        'time1': time1, 
+        'time2': time2, 
+        'time3': time3, 
+        'time4': time4, 
+        "is_cuda_available": is_cuda_available
+    })
 @app.route('/ping')
 def pong():
     return 'pong'

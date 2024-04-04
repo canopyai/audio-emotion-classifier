@@ -5,8 +5,9 @@ from denoise_audio import denoise_audio
 import librosa
 import soundfile as sf
 import time
+import io
 
-# endpoint = "http://35.234.142.114:8080"
+# endpoint = "http://35.202.236.166:8080"
 endpoint = "http://127.0.0.1:8080"
 def resample_to_16k(wav_file_path, output_file_path):
 
@@ -66,14 +67,10 @@ def wav_to_np_array():
 def post_numpy_array(numpy_array, framerate):
     # Convert the numpy array to a list for JSON serialization
     numpy_array = denoise_audio(numpy_array)
-
-    audio_list = numpy_array.tolist()
+    audio_bytes = numpy_array.astype(np.float64).tobytes()
     
     # Create the data payload
-    payload = {
-        "audio_samples": audio_list,
-        "framerate": framerate
-    }
+    payload = audio_bytes
     
     # Post the data to the specified endpoint
     ping_start = time.time()
@@ -81,7 +78,8 @@ def post_numpy_array(numpy_array, framerate):
     ping_end = time.time()
     print(f'ping time:{ping_end - ping_start}')
     startNumpify = time.time()
-    response = requests.post(endpoint, json=payload)
+    files = {'audio': ('audio_data', io.BytesIO(audio_bytes), 'application/octet-stream')}
+    response = requests.post(endpoint, files=files)
     endNumpify = time.time()
     
     return response, startNumpify, endNumpify
@@ -100,8 +98,7 @@ def infer():
     time2 = resp_json['time2']
     time3 = resp_json['time3']
     time4 = resp_json['time4']
-    time5 = resp_json['time5']
-    print(f'times:{time2 - time1}, {time3 - time2}, {time4 - time3}, {time5 - time4}')
+    print(f'times:{time2 - time1}, {time3 - time2}, {time4 - time3}')
 
 
 infer()
