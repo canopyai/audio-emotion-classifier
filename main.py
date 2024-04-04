@@ -3,6 +3,7 @@ from transformers import pipeline
 import time
 import numpy as np
 from flask_cors import CORS
+import torch
 
 app = Flask(__name__)
 CORS(app)
@@ -11,8 +12,10 @@ CORS(app)
 # Load the audio classification pipeline
 classifier = pipeline("audio-classification", model="amuvarma/audio-emotion-classifier-1-0")
 
+
 # Access the model object from the pipeline
 model = classifier.model
+model = model.to('cuda' if torch.cuda.is_available() else 'cpu')
 
 @app.route('/', methods=['POST'])
 def classify_audio():
