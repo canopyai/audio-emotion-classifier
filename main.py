@@ -11,7 +11,7 @@ CORS(app)
 
 
 # Load the audio classification pipeline
-classifier = pipeline("audio-classification", model="amuvarma/audio-emotion-classifier-1-4")
+classifier = pipeline("audio-classification", model="amuvarma/audio-emotion-classifier-1-0")
 
 
 # Access the model object from the pipeline
