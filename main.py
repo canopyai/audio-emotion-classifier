@@ -4,6 +4,8 @@ import time
 import numpy as np
 from flask_cors import CORS
 import torch
+from denoiser import pretrained
+from denoiser.dsp import convert_audio
 
 
 app = Flask(__name__)
@@ -12,8 +14,7 @@ CORS(app)
 
 # Load the audio classification pipeline
 classifier = pipeline("audio-classification", model="amuvarma/audio-emotion-classifier-1-4", device=0 if torch.cuda.is_available() else -1)
-
-
+denoiser_model = pretrained.dns64().cuda()
 # Access the model object from the pipeline
 model = classifier.model
 is_cuda_available = torch.cuda.is_available()
@@ -34,10 +35,16 @@ def classify_audio():
 
     # Convert bytes to numpy array
     audio_samples = np.frombuffer(audio_bytes, dtype=np.float64)
+    wav_tensor = torch.tensor(audio_samples).float().cuda()
+
+    with torch.no_grad():
+        denoised = denoiser_model(wav_tensor.unsqueeze(0))[0]
+
+    denoised_numpy = denoised.squeeze().cpu().numpy()
 
 
     # Process the numpy array as needed (your classification logic here)
-    result = classifier(audio_samples)
+    result = classifier(denoised_numpy)
     final_time = time.time()
 
     # You can include additional logic here if needed
