@@ -30,7 +30,7 @@ print(f"Transformers version: {transformers.__version__}")
 
 
 def get_ping_duration():
-    url = "http://35.234.142.114:8080/ping"
+    url = f'{endpoint}/ping'
     start_time = time.time()  # Record the start time
     response = requests.get(url)
     end_time = time.time()  # Record the end time
@@ -38,12 +38,11 @@ def get_ping_duration():
     duration = end_time - start_time  # Calculate the duration
     
     if response.status_code == 200:
-        return f"Response Time: {duration} seconds"
+        return duration
     else:
         return f"Error: {response.status_code}"
 
 def wav_to_np_array():
-    original_wav_file_path = "record.wav"   
     wav_path = "resampled.wav"
     # resample_to_16k(original_wav_file_path, wav_path)
     with wave.open(wav_path, 'rb') as wav_file:
@@ -76,10 +75,13 @@ def post_numpy_array(numpy_array, framerate):
     
     endTime = time.time()
 
+    print("payload created", payload[:10])
+
     print(f'time:{endTime - startTime}')
     # Post the data to the specified endpoint
     ping_start = time.time()
-    get_ping_duration()
+    duration = get_ping_duration()
+    print("ping duration", duration)
     ping_end = time.time()
     print(f'ping time:{ping_end - ping_start}')
     startNumpify = time.time()
@@ -93,12 +95,13 @@ def post_numpy_array(numpy_array, framerate):
 
 
 def infer():
-    
+    print("calling infer")
     numpy_array, fr = wav_to_np_array()
     
     response, startNumpify, endNumpify = post_numpy_array(numpy_array, fr)
     
     resp_json = response.json()
+    print(resp_json)
     time1 = resp_json['time1']
     time2 = resp_json['time2']
     time3 = resp_json['time3']

@@ -43,10 +43,7 @@ def classify_audio():
 
     return jsonify({
         'result': result, 
-        'time1': time1, 
-        'time2': time2, 
-        'time3': time3, 
-        'time4': time4, 
+        'inference_time': time4 - time1,
         "is_cuda_available": is_cuda_available
     })
 @app.route('/ping')
@@ -54,4 +51,4 @@ def pong():
     return 'pong'
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080, host='0.0.0.0')
+    app.run(debug=True, port=8083, host='0.0.0.0')
