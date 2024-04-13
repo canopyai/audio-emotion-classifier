@@ -44,7 +44,7 @@ def classify_audio():
 
 
     # Process the numpy array as needed (your classification logic here)
-    result = classifier(denoised_numpy)
+    result = classifier(denoised_numpy, top_k=10)
     final_time = time.time()
 
     # You can include additional logic here if needed
