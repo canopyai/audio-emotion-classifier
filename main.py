@@ -11,13 +11,14 @@ CORS(app)
 
 
 # Load the audio classification pipeline
-classifier = pipeline("audio-classification", model="amuvarma/audio-emotion-classifier-1-0")
+classifier = pipeline("audio-classification", model="amuvarma/audio-emotion-classifier-1-0", device=0 if torch.cuda.is_available() else -1)
 
 
 # Access the model object from the pipeline
 model = classifier.model
 is_cuda_available = torch.cuda.is_available()
-model = model.to('cuda' if torch.cuda.is_available() else 'cpu')
+device = 'cuda' if is_cuda_available else 'cpu'
+model = model.to(device)
 
 
 @app.route('/', methods=['POST'])
@@ -26,24 +27,24 @@ def classify_audio():
         return jsonify({"error": "Missing audio data"}), 400
 
     # Measure time to read the audio file from request
-    time1 = time.time()
+    initial_time = time.time()
     audio_file = request.files['audio']
     audio_bytes = audio_file.read()
-    time2 = time.time()
+
 
     # Convert bytes to numpy array
     audio_samples = np.frombuffer(audio_bytes, dtype=np.float64)
-    time3 = time.time()
+
 
     # Process the numpy array as needed (your classification logic here)
     result = classifier(audio_samples)
-    time4 = time.time()
+    final_time = time.time()
 
     # You can include additional logic here if needed
 
     return jsonify({
         'result': result, 
-        'inference_time': time4 - time1,
+        'inference_time': final_time - initial_time,
         "is_cuda_available": is_cuda_available
     })
 @app.route('/ping')

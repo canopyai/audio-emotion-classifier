@@ -7,8 +7,8 @@ import soundfile as sf
 import time
 import io
 
-endpoint = "http://34.141.193.219:8080"
-# endpoint = "http://127.0.0.1:8080"
+# endpoint = "http://34.141.193.219:8080"
+endpoint = "http://127.0.0.1:8080"
 def resample_to_16k(wav_file_path, output_file_path):
 
     # Load the original audio file
