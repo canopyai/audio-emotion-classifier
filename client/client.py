@@ -7,7 +7,7 @@ import soundfile as sf
 import time
 import io
 
-endpoint = "http://34.90.83.54:8080"
+endpoint = "http://34.141.193.219:8080"
 # endpoint = "http://127.0.0.1:8080"
 def resample_to_16k(wav_file_path, output_file_path):
 
@@ -102,11 +102,7 @@ def infer():
     
     resp_json = response.json()
     print(resp_json)
-    time1 = resp_json['time1']
-    time2 = resp_json['time2']
-    time3 = resp_json['time3']
-    time4 = resp_json['time4']
-    print(f'times:{time2 - time1}, {time3 - time2}, {time4 - time3}')
+
 
 
 infer()
